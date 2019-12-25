@@ -1,4 +1,4 @@
-" Springdroid instructions jump"
+" Santa's ship droid"
 
 class Intcode:
     def __init__(self, prog, input, output):
@@ -86,7 +86,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc21.txt','r')
+    file = open('input_aoc25.txt','r')
     lst = []
     for line in file:
         lst.append(line)
@@ -102,13 +102,17 @@ def ascii_inst(inst_string):
         asc_inst.append(ord(charac))
     return asc_inst
 
-def run(prog,ans):
-    input = ascii_inst(ans)
-    output = []
-    intcode = Intcode(prog, input, output)
-    intcode.exec()
-    for o in output:
-        print(o,end=" ")
-    return output
+def run(prog):
+    inputs = []
+    outputs = []
+    intcode = Intcode(prog, inputs, outputs)
+    while True:
+        intcode.exec()
+        for o in outputs:
+            print(chr(o),end="")
+        user_cmd = input()
+        inputs.extend(ascii_inst(user_cmd+'\n'))
+        outputs[:] = []
+    return None
 
-run(read_input(),'NOT B J\nNOT C T\nOR T J\nAND D J\nNOT A T\nOR T J\nRUN\n')
+print(run(read_input()))
