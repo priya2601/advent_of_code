@@ -1,6 +1,7 @@
-" built arcade cabinet... care package.. balls and tiles"
+" Tractor beam count pounds "
 
 from itertools import permutations
+import random
 
 
 class Intcode:
@@ -54,7 +55,7 @@ class Intcode:
                     self.prog[self.prog[self.i + 1] + self.base] = self.input.pop(0)
                 self.i += 2
             elif opcode == 4:
-                print(param1)
+                # print(param1)
                 self.i += 2
                 self.output.append(param1)
             elif opcode == 5:
@@ -89,7 +90,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc13.txt','r')
+    file = open('input_aoc19.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -99,45 +100,77 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-def count_tiles(prog):
-    prog[0] = 2
+def fill(prog, i, j, grid):
     input = []
     output = []
     intcode = Intcode(prog, input, output)
+    input.append(i)
+    input.append(j)
+
     intcode.exec()
-    tiles = dict()
-    k = 0
-    while k < len(output):
-        inst = output[k:k+3]
-        pos = (inst[0],inst[1])
-        if pos in tiles.keys():
-            if tiles[pos] in (0,1,3):
-                raise ValueError("cannot overwrite tile value")
-            else:
-                tiles[pos] = inst[2]
+    if output.pop() == 0:
+        grid[i][j] = '.'
+        return False
+    else:
+        grid[i][j] = '#'
+        return True
+
+def dense_points(prog, x, y, size):
+    n = 50
+    grid = {}
+    for i in range(x, x+size):
+        grid[i] = {}
+        for j in range(y, y+size):
+            fill(prog, i, j, grid)
+    return grid
+
+def sparse_points(prog):
+    n = 5000
+    grid = {}
+    points = 0
+    left_pound = 8
+    right_pound = 8
+    for i in range(8,n):
+        grid[i] = {}
+        if fill(prog, i, left_pound, grid):
+            pass
+        elif fill(prog, i, left_pound+1, grid):
+            left_pound += 1
+        elif fill(prog, i, left_pound + 2, grid):
+            left_pound += 2
         else:
-            tiles[pos] = inst[2]
-        k += 3
-    print_tile(tiles)
-    return
+            print("Could not find left pound")
 
-def print_tile(tiles):
+        right_pound = max(left_pound, right_pound)
+        while fill(prog, i, right_pound, grid):
+            right_pound += 1
+        for k in range(left_pound, right_pound):
+            grid[i][k] = '#'
 
-    for j in range(max([ x[1] for x in tiles.keys() ])):
-        for i in range(max([ x[0] for x in tiles.keys()])):
-            if tiles[(i,j)] == 0:
-                print(' ',end="")
-            elif tiles[(i,j)] == 1:
-                print('#',end="")
-            elif tiles[(i,j)] == 2:
-                print('*',end="")
-            elif tiles[(i,j)] == 3:
-                print('-',end="")
-            elif tiles[(i,j)] == 4:
-                print('o',end="")
+    L = 100
+    for i in range(8, n):
+        for j in range(n):
+            if check(grid, i, j) and check(grid, i+L, j) and check(grid, i, j+L) and check(grid, i+L, j+L):
+                print("Found: ", i, j)
+                return
+
+    return grid
+
+def check(grid, i, j):
+    if not i in grid.keys() or not j in grid[i].keys():
+        return False
+    return grid[i][j] == '#'
+
+def print_grid(grid, x, y, size):
+    for i in range(x, x+size):
+        for j in range(y, y+size):
+            if j in grid[i].keys():
+                print(grid[i][j], end="")
+            else:
+                print(' ', end="")
         print()
 
-
-print(count_tiles(read_input()))
+sparse_points(read_input())
+#print_grid(dense_points(read_input(), 1843, 2001, 100), 1843, 2001, 100)
 
 

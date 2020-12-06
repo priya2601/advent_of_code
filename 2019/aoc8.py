@@ -5,7 +5,7 @@ import numpy as np
 np.set_printoptions(linewidth=200)
 
 def read_input():
-    file = open('input_aoc8.txt','r')
+    file = open('input_aoc8.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)

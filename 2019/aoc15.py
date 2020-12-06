@@ -1,6 +1,7 @@
-" built hull painting robot"
+" Oxygen tank repair droid min steps"
 
 from itertools import permutations
+import random
 
 
 class Intcode:
@@ -54,7 +55,7 @@ class Intcode:
                     self.prog[self.prog[self.i + 1] + self.base] = self.input.pop(0)
                 self.i += 2
             elif opcode == 4:
-                print(param1)
+                # print(param1)
                 self.i += 2
                 self.output.append(param1)
             elif opcode == 5:
@@ -89,7 +90,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc11.txt','r')
+    file = open('input_aoc15.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -99,43 +100,59 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-UP = (0,1)
-DOWN = (0,-1)
-LEFT = (-1,0)
-RIGHT = (1,0)
-directions = [UP,LEFT,DOWN,RIGHT]
+def count_steps(prog):
+    NORTH = (0,1)
+    EAST = (1,0)
+    WEST  = (-1,0)
+    SOUTH = (0,-1)
+    direction = [NORTH, SOUTH, WEST, EAST]
 
-def count_panels(prog):
-    input = [1]
+    input = []
     output = []
     intcode = Intcode(prog, input, output)
-    hull = dict()
-    x = 0
-    y = 0
-    direction = UP
-    while not intcode.exec():
-        if len(output) != 2:
-            raise ValueError("output not 2")
-        hull[(x,y)] = output[0]
-        if output[1] == 0:
-            direction = directions[(directions.index(direction)+1) % 4]
-        else:
-            direction = directions[(directions.index(direction) - 1) % 4]
-        x += direction[0]
-        y += direction[1]
-        input.append(hull.get((x,y),0))
-        output[:] = []
-    min_x = min([x[0] for x in hull.keys()])
-    max_x = max([x[0] for x in hull.keys()])
-    min_y = min([x[1] for x in hull.keys()])
-    max_y = max([x[1] for x in hull.keys()])
+    curr_pos = (0, 0)
+    curr_dir = 0
+    directions_at_wall = dict()
+    room = dict()
+    while True:
+        input.append(curr_dir+1)
+        intcode.exec()
+        # print(output)
+        next_pos = (curr_pos[0]+direction[curr_dir][0], curr_pos[1]+direction[curr_dir][1])
+        if output[0] == 0 or output[0] == 1:
+            list = [0,1,2,3]
+            random.shuffle(list)
+            if next_pos in directions_at_wall:
+                if len(directions_at_wall[next_pos]) == 0:
+                    raise ValueError("Exhausted directions")
+#                    directions_at_wall[next_pos] = list
+                curr_dir = directions_at_wall[next_pos].pop(0)
+            else:
+                directions_at_wall[next_pos] = list
+        if output[0] == 0:
+            room[next_pos]  = '#'
+        elif output[0] == 1:
+            room[next_pos] = '.'
+            curr_pos = next_pos
+        elif output[0] == 2:
+            room[next_pos] = 'o'
+            curr_pos = next_pos
+            print_room(room)
+            return(room)
+        output.pop(0)
+        print_room(room)
+    return(room)
 
-    for j in range(min_y, max_y + 1):
-        for i in range(min_x,max_x+1):
-            print(hull.get((i,j),0),' ',end="")
+def print_room(tiles):
+    print("room")
+    tiles[(0,0)] = 'D'
+    for j in range(min([ x[1] for x in tiles.keys() ]), max([ x[1] for x in tiles.keys() ])+1):
+        for i in range(min([ x[0] for x in tiles.keys()]),max([ x[0] for x in tiles.keys()])+1):
+            if (i,j) in tiles.keys():
+                print(tiles[(i,j)],end="")
+            else:
+                print(' ',end="")
         print()
-    return len(hull)
-
-print(count_panels(read_input()))
 
 
+print(count_steps(read_input()))

@@ -1,6 +1,6 @@
 def read_fuel():
     f = []
-    fil = open('input_aoc1.txt','r')
+    fil = open('input_aoc1.txt', 'r')
     for line in fil:
         f.append(int(line))
     return f

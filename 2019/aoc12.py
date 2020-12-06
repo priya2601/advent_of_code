@@ -2,7 +2,7 @@
 import copy
 
 def read_input():
-    file = open('input_aoc12.txt','r')
+    file = open('input_aoc12.txt', 'r')
     lst = []
     for line in file:
         lst.append([int(t) for t in line.split(',')])

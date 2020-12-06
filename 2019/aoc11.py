@@ -1,4 +1,7 @@
-" Springdroid instructions jump"
+" built hull painting robot"
+
+from itertools import permutations
+
 
 class Intcode:
     def __init__(self, prog, input, output):
@@ -51,7 +54,7 @@ class Intcode:
                     self.prog[self.prog[self.i + 1] + self.base] = self.input.pop(0)
                 self.i += 2
             elif opcode == 4:
-                # print(param1)
+                print(param1)
                 self.i += 2
                 self.output.append(param1)
             elif opcode == 5:
@@ -86,7 +89,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc21.txt','r')
+    file = open('input_aoc11.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -96,19 +99,43 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-def ascii_inst(inst_string):
-    asc_inst = []
-    for charac in inst_string:
-        asc_inst.append(ord(charac))
-    return asc_inst
+UP = (0,1)
+DOWN = (0,-1)
+LEFT = (-1,0)
+RIGHT = (1,0)
+directions = [UP,LEFT,DOWN,RIGHT]
 
-def run(prog,ans):
-    input = ascii_inst(ans)
+def count_panels(prog):
+    input = [1]
     output = []
     intcode = Intcode(prog, input, output)
-    intcode.exec()
-    for o in output:
-        print(o,end=" ")
-    return output
+    hull = dict()
+    x = 0
+    y = 0
+    direction = UP
+    while not intcode.exec():
+        if len(output) != 2:
+            raise ValueError("output not 2")
+        hull[(x,y)] = output[0]
+        if output[1] == 0:
+            direction = directions[(directions.index(direction)+1) % 4]
+        else:
+            direction = directions[(directions.index(direction) - 1) % 4]
+        x += direction[0]
+        y += direction[1]
+        input.append(hull.get((x,y),0))
+        output[:] = []
+    min_x = min([x[0] for x in hull.keys()])
+    max_x = max([x[0] for x in hull.keys()])
+    min_y = min([x[1] for x in hull.keys()])
+    max_y = max([x[1] for x in hull.keys()])
 
-run(read_input(),'NOT B J\nNOT C T\nOR T J\nAND D J\nNOT A T\nOR T J\nRUN\n')
+    for j in range(min_y, max_y + 1):
+        for i in range(min_x,max_x+1):
+            print(hull.get((i,j),0),' ',end="")
+        print()
+    return len(hull)
+
+print(count_panels(read_input()))
+
+

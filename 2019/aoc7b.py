@@ -64,7 +64,7 @@ class Amplifier:
         return True
 
 def read_input():
-    file = open('input_aoc7.txt','r')
+    file = open('input_aoc7.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)

@@ -1,6 +1,8 @@
-" BOOST program.. Memory.. Opcode 9 and relative mode"
+" Solar flare vacuum robot get intersections"
 
 from itertools import permutations
+import random
+import numpy as np
 
 
 class Intcode:
@@ -54,7 +56,7 @@ class Intcode:
                     self.prog[self.prog[self.i + 1] + self.base] = self.input.pop(0)
                 self.i += 2
             elif opcode == 4:
-                print(param1)
+                # print(param1)
                 self.i += 2
                 self.output.append(param1)
             elif opcode == 5:
@@ -89,7 +91,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc9.txt','r')
+    file = open('input_aoc17.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -99,12 +101,34 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-# i = Intcode([109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99],[],[])
-# i = Intcode([1102,34915192,34915192,7,4,7,99,0],[],[])
-# i = Intcode([104,1125899906842624,99],[],[])
+def get_alignment(prog):
+    input = []
+    output = []
+    intcode = Intcode(prog, input, output)
+    intcode.exec()
+    for i in range(len(output)):
+        output[i] = chr(int(output[i]))
+    grid = []
+    cols = output.index('\n')
+    for i in range(len(output)):
+        if output[i] != '\n':
+            grid.append(output[i])
+    view = np.reshape(np.array(grid),(-1,cols))
+    align = 0
+    for i in range(1,len(view)-1):
+        for j in range(1,len(view[0])-1):
+            up = view[i-1][j]
+            down = view[i+1][j]
+            left = view[i][j-1]
+            right = view[i][j+1]
+            this = view[i][j]
+            if up == down and left == right and right == '#' and up == '#' and this == '#':
+                align += i*j
+    return align
 
-i = Intcode(read_input(),[2],[])
-print(i.exec())
+
+
+print(get_alignment(read_input()))
 
 
 

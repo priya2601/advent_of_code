@@ -1,6 +1,6 @@
 def read_input():
     wires = []
-    file = open('input_aoc3.txt','r')
+    file = open('input_aoc3.txt', 'r')
     for line in file:
         wires.append(line)
     wire1 = wires[0].split()[0].split(',')

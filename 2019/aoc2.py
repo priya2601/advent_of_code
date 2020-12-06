@@ -16,7 +16,7 @@ def exec(prog):
     return prog[0]
 
 def read_input():
-    file = open('input_aoc2.txt','r')
+    file = open('input_aoc2.txt', 'r')
 
     lst = []
     for line in file:

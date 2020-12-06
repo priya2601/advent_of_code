@@ -1,7 +1,7 @@
 " Pluto maze. find shortest path through warps"
 
 def read_input():
-    file = open('input_aoc20.txt','r')
+    file = open('input_aoc20.txt', 'r')
     lst = []
     for line in file:
         lst.append(line.strip('\n'))

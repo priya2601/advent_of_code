@@ -1,8 +1,4 @@
-" Tractor beam count pounds "
-
-from itertools import permutations
-import random
-
+" Springdroid instructions jump"
 
 class Intcode:
     def __init__(self, prog, input, output):
@@ -90,7 +86,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc19.txt','r')
+    file = open('input_aoc21.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -100,77 +96,19 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-def fill(prog, i, j, grid):
-    input = []
+def ascii_inst(inst_string):
+    asc_inst = []
+    for charac in inst_string:
+        asc_inst.append(ord(charac))
+    return asc_inst
+
+def run(prog,ans):
+    input = ascii_inst(ans)
     output = []
     intcode = Intcode(prog, input, output)
-    input.append(i)
-    input.append(j)
-
     intcode.exec()
-    if output.pop() == 0:
-        grid[i][j] = '.'
-        return False
-    else:
-        grid[i][j] = '#'
-        return True
+    for o in output:
+        print(o,end=" ")
+    return output
 
-def dense_points(prog, x, y, size):
-    n = 50
-    grid = {}
-    for i in range(x, x+size):
-        grid[i] = {}
-        for j in range(y, y+size):
-            fill(prog, i, j, grid)
-    return grid
-
-def sparse_points(prog):
-    n = 5000
-    grid = {}
-    points = 0
-    left_pound = 8
-    right_pound = 8
-    for i in range(8,n):
-        grid[i] = {}
-        if fill(prog, i, left_pound, grid):
-            pass
-        elif fill(prog, i, left_pound+1, grid):
-            left_pound += 1
-        elif fill(prog, i, left_pound + 2, grid):
-            left_pound += 2
-        else:
-            print("Could not find left pound")
-
-        right_pound = max(left_pound, right_pound)
-        while fill(prog, i, right_pound, grid):
-            right_pound += 1
-        for k in range(left_pound, right_pound):
-            grid[i][k] = '#'
-
-    L = 100
-    for i in range(8, n):
-        for j in range(n):
-            if check(grid, i, j) and check(grid, i+L, j) and check(grid, i, j+L) and check(grid, i+L, j+L):
-                print("Found: ", i, j)
-                return
-
-    return grid
-
-def check(grid, i, j):
-    if not i in grid.keys() or not j in grid[i].keys():
-        return False
-    return grid[i][j] == '#'
-
-def print_grid(grid, x, y, size):
-    for i in range(x, x+size):
-        for j in range(y, y+size):
-            if j in grid[i].keys():
-                print(grid[i][j], end="")
-            else:
-                print(' ', end="")
-        print()
-
-sparse_points(read_input())
-#print_grid(dense_points(read_input(), 1843, 2001, 100), 1843, 2001, 100)
-
-
+run(read_input(),'NOT B J\nNOT C T\nOR T J\nAND D J\nNOT A T\nOR T J\nRUN\n')

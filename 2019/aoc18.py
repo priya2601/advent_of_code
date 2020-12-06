@@ -1,6 +1,6 @@
 
 def read_input():
-    file = open('input_aoc18.txt','r')
+    file = open('input_aoc18.txt', 'r')
     lst = []
     for line in file:
         ln = line.strip()

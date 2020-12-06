@@ -1,7 +1,6 @@
-" Oxygen tank repair droid min steps"
+" built arcade cabinet... care package.. balls and tiles"
 
 from itertools import permutations
-import random
 
 
 class Intcode:
@@ -55,7 +54,7 @@ class Intcode:
                     self.prog[self.prog[self.i + 1] + self.base] = self.input.pop(0)
                 self.i += 2
             elif opcode == 4:
-                # print(param1)
+                print(param1)
                 self.i += 2
                 self.output.append(param1)
             elif opcode == 5:
@@ -90,7 +89,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc15.txt','r')
+    file = open('input_aoc13.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
@@ -100,59 +99,45 @@ def read_input():
         intlist.append(int(l))
     return intlist
 
-def count_steps(prog):
-    NORTH = (0,1)
-    EAST = (1,0)
-    WEST  = (-1,0)
-    SOUTH = (0,-1)
-    direction = [NORTH, SOUTH, WEST, EAST]
-
+def count_tiles(prog):
+    prog[0] = 2
     input = []
     output = []
     intcode = Intcode(prog, input, output)
-    curr_pos = (0, 0)
-    curr_dir = 0
-    directions_at_wall = dict()
-    room = dict()
-    while True:
-        input.append(curr_dir+1)
-        intcode.exec()
-        # print(output)
-        next_pos = (curr_pos[0]+direction[curr_dir][0], curr_pos[1]+direction[curr_dir][1])
-        if output[0] == 0 or output[0] == 1:
-            list = [0,1,2,3]
-            random.shuffle(list)
-            if next_pos in directions_at_wall:
-                if len(directions_at_wall[next_pos]) == 0:
-                    raise ValueError("Exhausted directions")
-#                    directions_at_wall[next_pos] = list
-                curr_dir = directions_at_wall[next_pos].pop(0)
+    intcode.exec()
+    tiles = dict()
+    k = 0
+    while k < len(output):
+        inst = output[k:k+3]
+        pos = (inst[0],inst[1])
+        if pos in tiles.keys():
+            if tiles[pos] in (0,1,3):
+                raise ValueError("cannot overwrite tile value")
             else:
-                directions_at_wall[next_pos] = list
-        if output[0] == 0:
-            room[next_pos]  = '#'
-        elif output[0] == 1:
-            room[next_pos] = '.'
-            curr_pos = next_pos
-        elif output[0] == 2:
-            room[next_pos] = 'o'
-            curr_pos = next_pos
-            print_room(room)
-            return(room)
-        output.pop(0)
-        print_room(room)
-    return(room)
+                tiles[pos] = inst[2]
+        else:
+            tiles[pos] = inst[2]
+        k += 3
+    print_tile(tiles)
+    return
 
-def print_room(tiles):
-    print("room")
-    tiles[(0,0)] = 'D'
-    for j in range(min([ x[1] for x in tiles.keys() ]), max([ x[1] for x in tiles.keys() ])+1):
-        for i in range(min([ x[0] for x in tiles.keys()]),max([ x[0] for x in tiles.keys()])+1):
-            if (i,j) in tiles.keys():
-                print(tiles[(i,j)],end="")
-            else:
+def print_tile(tiles):
+
+    for j in range(max([ x[1] for x in tiles.keys() ])):
+        for i in range(max([ x[0] for x in tiles.keys()])):
+            if tiles[(i,j)] == 0:
                 print(' ',end="")
+            elif tiles[(i,j)] == 1:
+                print('#',end="")
+            elif tiles[(i,j)] == 2:
+                print('*',end="")
+            elif tiles[(i,j)] == 3:
+                print('-',end="")
+            elif tiles[(i,j)] == 4:
+                print('o',end="")
         print()
 
 
-print(count_steps(read_input()))
+print(count_tiles(read_input()))
+
+

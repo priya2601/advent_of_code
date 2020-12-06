@@ -86,7 +86,7 @@ class Intcode:
         return True
 
 def read_input():
-    file = open('input_aoc23.txt','r')
+    file = open('input_aoc23.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)

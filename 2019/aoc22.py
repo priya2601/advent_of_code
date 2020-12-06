@@ -15,7 +15,7 @@ def new_stack(deck):
     return deck[::-1]
 
 def read_input():
-    file = open('input_aoc22.txt','r')
+    file = open('input_aoc22.txt', 'r')
     instr = []
     for line in file:
         instr.append(line)

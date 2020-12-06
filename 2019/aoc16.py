@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 def read_input():
-    file = open('input_aoc16.txt','r')
+    file = open('input_aoc16.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)

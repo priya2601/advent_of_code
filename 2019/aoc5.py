@@ -52,7 +52,7 @@ def exec(prog):
     return
 
 def read_input():
-    file = open('input_aoc5.txt','r')
+    file = open('input_aoc5.txt', 'r')
     lst = []
     for line in file:
         lst.append(line)
